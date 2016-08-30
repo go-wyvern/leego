@@ -46,7 +46,7 @@ func NewRouter(lee *Leego) *Router {
 			methodHandler: new(methodHandler),
 		},
 		routes: make(map[string]Route),
-		leego:   lee,
+		leego:  lee,
 	}
 }
 
@@ -82,7 +82,7 @@ func (r *Router) Add(method, path string, h HandlerFunc, lee *Leego) {
 		} else if path[i] == '*' {
 			r.insert(method, path[:i], nil, skind, "", nil, lee)
 			pnames = append(pnames, "_*")
-			r.insert(method, path[:i + 1], h, akind, ppath, pnames, lee)
+			r.insert(method, path[:i+1], h, akind, ppath, pnames, lee)
 			return
 		}
 	}
@@ -292,11 +292,11 @@ func (r *Router) Find(method, path string, context Context) {
 	var (
 		search = path
 		c       *node  // Child node
-		n int    // Param counter
-		nk kind   // Next kind
+		n       int    // Param counter
+		nk      kind   // Next kind
 		nn      *node  // Next node
-		ns string // Next search
-		pmap  =make(map[string]string)
+		ns      string // Next search
+		pmap    = make(map[string]string)
 		pvalues = context.ParamValues()
 	)
 
@@ -354,7 +354,7 @@ func (r *Router) Find(method, path string, context Context) {
 		}
 
 		// Param node
-		Param:
+	Param:
 		if c = cn.findChildByKind(pkind); c != nil {
 			// Issue #378
 			if len(pvalues) == n {
@@ -379,7 +379,7 @@ func (r *Router) Find(method, path string, context Context) {
 		}
 
 		// Any node
-		Any:
+	Any:
 		if cn = cn.findChildByKind(akind); cn == nil {
 			if nn != nil {
 				cn = nn
@@ -394,15 +394,14 @@ func (r *Router) Find(method, path string, context Context) {
 			// Not found
 			return
 		}
-		pvalues[len(cn.pnames) - 1] = search
+		pvalues[len(cn.pnames)-1] = search
 		goto End
 	}
 
-	End:
+End:
 	context.SetHandler(cn.findHandler(method))
 	context.SetPath(cn.ppath)
 	context.SetParamNames(cn.pnames...)
-
 
 	// NOTE: Slow zone...
 	if context.Handler() == nil {
@@ -420,11 +419,11 @@ func (r *Router) Find(method, path string, context Context) {
 		}
 		context.SetPath(cn.ppath)
 		context.SetParamNames(cn.pnames...)
-		pvalues[len(cn.pnames) - 1] = ""
+		pvalues[len(cn.pnames)-1] = ""
 	}
 
 	for i, name := range cn.pnames {
-		pmap[name]=pvalues[i]
+		pmap[name] = pvalues[i]
 	}
 	context.SetParamsMap(pmap)
 	return
