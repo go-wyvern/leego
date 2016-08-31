@@ -101,6 +101,12 @@ func (s *Server) Start() error {
 	return s.startCustomListener()
 }
 
+func (s *Server) Stop() {
+	if s.config.Listener != nil {
+		s.config.Listener.Close()
+	}
+}
+
 func (s *Server) startDefaultListener() error {
 	c := s.config
 	if c.TLSCertFile != "" && c.TLSKeyFile != "" {

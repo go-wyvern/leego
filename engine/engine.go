@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"net"
-
 	//"github.com/labstack/echo/log"
 )
 
@@ -18,8 +17,8 @@ type (
 
 		// SetLogger sets the logger for the HTTP server.
 		//SetLogger(log.Logger)
-
-		// Start starts the HTTP server.
+		Stop()
+		// Start starts th e HTTP server.
 		Start() error
 	}
 

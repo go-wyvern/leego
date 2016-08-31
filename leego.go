@@ -1,18 +1,19 @@
 package leego
 
 import (
-	"io"
-	"sync"
-	"net/http"
-	"errors"
 	"bytes"
+	"errors"
 	"fmt"
+	"io"
+	"net/http"
 	"reflect"
 	"runtime"
+	"sync"
 
 	"golang.org/x/net/context"
 
 	"github.com/go-wyvern/Leego/engine"
+	"github.com/go-wyvern/Leego/utils"
 )
 
 type (
@@ -21,6 +22,7 @@ type (
 		premiddleware      []MiddlewareFunc
 		middleware         []MiddlewareFunc
 		maxParam           *int
+		wg                 utils.WaitGroupWrapper
 		notFoundHandler    HandlerFunc
 		httpErrorHandler   HTTPErrorHandler
 		httpSuccessHandler HTTPSuccessHandler
@@ -50,7 +52,7 @@ type (
 	HandlerFunc func(Context) LeegoError
 
 	// HTTPErrorHandler is a centralized HTTP error handler.
-	HTTPErrorHandler func(LeegoError, Context)
+	HTTPErrorHandler   func(LeegoError, Context)
 	HTTPSuccessHandler func(Context)
 
 	ResponseHandler func(LeegoError, Context)
@@ -73,14 +75,14 @@ type (
 // HTTP methods
 const (
 	CONNECT = "CONNECT"
-	DELETE = "DELETE"
-	GET = "GET"
-	HEAD = "HEAD"
+	DELETE  = "DELETE"
+	GET     = "GET"
+	HEAD    = "HEAD"
 	OPTIONS = "OPTIONS"
-	PATCH = "PATCH"
-	POST = "POST"
-	PUT = "PUT"
-	TRACE = "TRACE"
+	PATCH   = "PATCH"
+	POST    = "POST"
+	PUT     = "PUT"
+	TRACE   = "TRACE"
 )
 
 var (
@@ -99,21 +101,21 @@ var (
 
 // MIME types
 const (
-	MIMEApplicationJSON = "application/json"
-	MIMEApplicationJSONCharsetUTF8 = MIMEApplicationJSON + "; " + charsetUTF8
-	MIMEApplicationJavaScript = "application/javascript"
+	MIMEApplicationJSON                  = "application/json"
+	MIMEApplicationJSONCharsetUTF8       = MIMEApplicationJSON + "; " + charsetUTF8
+	MIMEApplicationJavaScript            = "application/javascript"
 	MIMEApplicationJavaScriptCharsetUTF8 = MIMEApplicationJavaScript + "; " + charsetUTF8
-	MIMEApplicationXML = "application/xml"
-	MIMEApplicationXMLCharsetUTF8 = MIMEApplicationXML + "; " + charsetUTF8
-	MIMEApplicationForm = "application/x-www-form-urlencoded"
-	MIMEApplicationProtobuf = "application/protobuf"
-	MIMEApplicationMsgpack = "application/msgpack"
-	MIMETextHTML = "text/html"
-	MIMETextHTMLCharsetUTF8 = MIMETextHTML + "; " + charsetUTF8
-	MIMETextPlain = "text/plain"
-	MIMETextPlainCharsetUTF8 = MIMETextPlain + "; " + charsetUTF8
-	MIMEMultipartForm = "multipart/form-data"
-	MIMEOctetStream = "application/octet-stream"
+	MIMEApplicationXML                   = "application/xml"
+	MIMEApplicationXMLCharsetUTF8        = MIMEApplicationXML + "; " + charsetUTF8
+	MIMEApplicationForm                  = "application/x-www-form-urlencoded"
+	MIMEApplicationProtobuf              = "application/protobuf"
+	MIMEApplicationMsgpack               = "application/msgpack"
+	MIMETextHTML                         = "text/html"
+	MIMETextHTMLCharsetUTF8              = MIMETextHTML + "; " + charsetUTF8
+	MIMETextPlain                        = "text/plain"
+	MIMETextPlainCharsetUTF8             = MIMETextPlain + "; " + charsetUTF8
+	MIMEMultipartForm                    = "multipart/form-data"
+	MIMEOctetStream                      = "application/octet-stream"
 )
 
 const (
@@ -122,55 +124,55 @@ const (
 
 // Headers
 const (
-	HeaderAcceptEncoding = "Accept-Encoding"
-	HeaderAllow = "Allow"
-	HeaderAuthorization = "Authorization"
-	HeaderContentDisposition = "Content-Disposition"
-	HeaderContentEncoding = "Content-Encoding"
-	HeaderContentLength = "Content-Length"
-	HeaderContentType = "Content-Type"
-	HeaderCookie = "Cookie"
-	HeaderSetCookie = "Set-Cookie"
-	HeaderIfModifiedSince = "If-Modified-Since"
-	HeaderLastModified = "Last-Modified"
-	HeaderLocation = "Location"
-	HeaderUpgrade = "Upgrade"
-	HeaderVary = "Vary"
-	HeaderWWWAuthenticate = "WWW-Authenticate"
-	HeaderXForwardedProto = "X-Forwarded-Proto"
-	HeaderXHTTPMethodOverride = "X-HTTP-Method-Override"
-	HeaderXForwardedFor = "X-Forwarded-For"
-	HeaderXRealIP = "X-Real-IP"
-	HeaderServer = "Server"
-	HeaderOrigin = "Origin"
-	HeaderAccessControlRequestMethod = "Access-Control-Request-Method"
-	HeaderAccessControlRequestHeaders = "Access-Control-Request-Headers"
-	HeaderAccessControlAllowOrigin = "Access-Control-Allow-Origin"
-	HeaderAccessControlAllowMethods = "Access-Control-Allow-Methods"
-	HeaderAccessControlAllowHeaders = "Access-Control-Allow-Headers"
+	HeaderAcceptEncoding                = "Accept-Encoding"
+	HeaderAllow                         = "Allow"
+	HeaderAuthorization                 = "Authorization"
+	HeaderContentDisposition            = "Content-Disposition"
+	HeaderContentEncoding               = "Content-Encoding"
+	HeaderContentLength                 = "Content-Length"
+	HeaderContentType                   = "Content-Type"
+	HeaderCookie                        = "Cookie"
+	HeaderSetCookie                     = "Set-Cookie"
+	HeaderIfModifiedSince               = "If-Modified-Since"
+	HeaderLastModified                  = "Last-Modified"
+	HeaderLocation                      = "Location"
+	HeaderUpgrade                       = "Upgrade"
+	HeaderVary                          = "Vary"
+	HeaderWWWAuthenticate               = "WWW-Authenticate"
+	HeaderXForwardedProto               = "X-Forwarded-Proto"
+	HeaderXHTTPMethodOverride           = "X-HTTP-Method-Override"
+	HeaderXForwardedFor                 = "X-Forwarded-For"
+	HeaderXRealIP                       = "X-Real-IP"
+	HeaderServer                        = "Server"
+	HeaderOrigin                        = "Origin"
+	HeaderAccessControlRequestMethod    = "Access-Control-Request-Method"
+	HeaderAccessControlRequestHeaders   = "Access-Control-Request-Headers"
+	HeaderAccessControlAllowOrigin      = "Access-Control-Allow-Origin"
+	HeaderAccessControlAllowMethods     = "Access-Control-Allow-Methods"
+	HeaderAccessControlAllowHeaders     = "Access-Control-Allow-Headers"
 	HeaderAccessControlAllowCredentials = "Access-Control-Allow-Credentials"
-	HeaderAccessControlExposeHeaders = "Access-Control-Expose-Headers"
-	HeaderAccessControlMaxAge = "Access-Control-Max-Age"
+	HeaderAccessControlExposeHeaders    = "Access-Control-Expose-Headers"
+	HeaderAccessControlMaxAge           = "Access-Control-Max-Age"
 
 	// Security
 	HeaderStrictTransportSecurity = "Strict-Transport-Security"
-	HeaderXContentTypeOptions = "X-Content-Type-Options"
-	HeaderXXSSProtection = "X-XSS-Protection"
-	HeaderXFrameOptions = "X-Frame-Options"
-	HeaderContentSecurityPolicy = "Content-Security-Policy"
-	HeaderXCSRFToken = "X-CSRF-Token"
+	HeaderXContentTypeOptions     = "X-Content-Type-Options"
+	HeaderXXSSProtection          = "X-XSS-Protection"
+	HeaderXFrameOptions           = "X-Frame-Options"
+	HeaderContentSecurityPolicy   = "Content-Security-Policy"
+	HeaderXCSRFToken              = "X-CSRF-Token"
 )
 
 // Errors
 var (
-	ErrUnsupportedMediaType = NewHTTPError(http.StatusUnsupportedMediaType)
-	ErrNotFound = NewHTTPError(http.StatusNotFound)
-	ErrUnauthorized = NewHTTPError(http.StatusUnauthorized)
-	ErrMethodNotAllowed = NewHTTPError(http.StatusMethodNotAllowed)
+	ErrUnsupportedMediaType        = NewHTTPError(http.StatusUnsupportedMediaType)
+	ErrNotFound                    = NewHTTPError(http.StatusNotFound)
+	ErrUnauthorized                = NewHTTPError(http.StatusUnauthorized)
+	ErrMethodNotAllowed            = NewHTTPError(http.StatusMethodNotAllowed)
 	ErrStatusRequestEntityTooLarge = NewHTTPError(http.StatusRequestEntityTooLarge)
-	ErrRendererNotRegistered = errors.New("renderer not registered")
-	ErrInvalidRedirectCode = errors.New("invalid redirect status code")
-	ErrCookieNotFound = errors.New("cookie not found")
+	ErrRendererNotRegistered       = errors.New("renderer not registered")
+	ErrInvalidRedirectCode         = errors.New("invalid redirect status code")
+	ErrCookieNotFound              = errors.New("cookie not found")
 )
 
 // Error handlers
@@ -217,10 +219,10 @@ func (e *Leego) NewContext(req engine.Request, res engine.Response) Context {
 		context:  context.Background(),
 		request:  req,
 		response: res,
-		leego:     e,
+		leego:    e,
 		pvalues:  make([]string, *e.maxParam),
 		handler:  NotFoundHandler,
-		data: make(map[string]interface{}),
+		data:     make(map[string]interface{}),
 	}
 }
 
@@ -414,7 +416,7 @@ func (e *Leego) add(method, path string, handler HandlerFunc, middleware ...Midd
 		Handler: name,
 	}
 
-	e.router.routes[method + path] = r
+	e.router.routes[method+path] = r
 }
 
 func (e *Leego) ServeHTTP(req engine.Request, res engine.Response) {
@@ -454,7 +456,6 @@ func (e *Leego) Run(s engine.Server) {
 	s.Start()
 }
 
-
 // Group creates a new router group with prefix and optional group-level middleware.
 func (e *Leego) Group(prefix string, m ...MiddlewareFunc) (g *Group) {
 	g = &Group{prefix: prefix, leego: e}
@@ -491,7 +492,6 @@ func (e *Leego) URI(handler HandlerFunc, params ...interface{}) string {
 func (e *Leego) URL(h HandlerFunc, params ...interface{}) string {
 	return e.URI(h, params...)
 }
-
 
 // WrapMiddleware wrap `echo.HandlerFunc` into `echo.MiddlewareFunc`.
 func WrapMiddleware(h HandlerFunc) MiddlewareFunc {
