@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/go-wyvern/Leego/engine"
+	"github.com/go-wyvern/logger"
 
 	"golang.org/x/net/context"
 )
@@ -176,7 +177,7 @@ type (
 		GetParamsMap() map[string]string
 
 		// Logger returns the `Logger` instance.
-		//Logger() log.Logger
+		Logger() *logger.Logger
 
 		// Echo returns the `Echo` instance.
 		Leego() *Leego
@@ -191,7 +192,8 @@ type (
 		// See `Echo#ServeHTTP()`
 		Reset(engine.Request, engine.Response)
 
-		SetData(string,interface{})
+		SetData(string, interface{})
+
 		GetData(string) interface{}
 	}
 
@@ -202,6 +204,7 @@ type (
 		path      string
 		pnames    []string
 		pvalues   []string
+		logger    *logger.Logger
 		paramsMap map[string]string
 		handler   HandlerFunc
 		leego     *Leego
@@ -215,12 +218,16 @@ func (c *echoContext) SetParamsMap(m map[string]string) {
 	c.paramsMap = m
 }
 
+func (c *echoContext) Logger() *logger.Logger {
+	return c.logger
+}
+
 func (c *echoContext) GetParamsMap() map[string]string {
 	return c.paramsMap
 }
 
-func (c *echoContext) SetData(key string,data interface{}) {
-	c.data[key]=data
+func (c *echoContext) SetData(key string, data interface{}) {
+	c.data[key] = data
 }
 
 func (c *echoContext) GetData(key string) interface{} {
@@ -457,7 +464,7 @@ func (c *echoContext) File(file string) error {
 
 func (c *echoContext) Attachment(r io.ReadSeeker, name string) (err error) {
 	c.response.Header().Set(HeaderContentType, ContentTypeByExtension(name))
-	c.response.Header().Set(HeaderContentDisposition, "attachment; filename=" + name)
+	c.response.Header().Set(HeaderContentDisposition, "attachment; filename="+name)
 	c.response.WriteHeader(http.StatusOK)
 	_, err = io.Copy(c.response, r)
 	return
@@ -501,7 +508,7 @@ func (c *echoContext) ServeContent(content io.ReadSeeker, name string, modtime t
 	req := c.Request()
 	res := c.Response()
 
-	if t, err := time.Parse(http.TimeFormat, req.Header().Get(HeaderIfModifiedSince)); err == nil && modtime.Before(t.Add(1 * time.Second)) {
+	if t, err := time.Parse(http.TimeFormat, req.Header().Get(HeaderIfModifiedSince)); err == nil && modtime.Before(t.Add(1*time.Second)) {
 		res.Header().Del(HeaderContentType)
 		res.Header().Del(HeaderContentLength)
 		return c.NoContent(http.StatusNotModified)
