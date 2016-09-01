@@ -204,7 +204,6 @@ type (
 		path      string
 		pnames    []string
 		pvalues   []string
-		logger    *logger.Logger
 		paramsMap map[string]string
 		handler   HandlerFunc
 		leego     *Leego
@@ -219,7 +218,7 @@ func (c *echoContext) SetParamsMap(m map[string]string) {
 }
 
 func (c *echoContext) Logger() *logger.Logger {
-	return c.logger
+	return c.leego.logger
 }
 
 func (c *echoContext) GetParamsMap() map[string]string {

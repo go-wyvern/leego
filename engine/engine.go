@@ -3,10 +3,10 @@ package engine
 import (
 	"io"
 	"mime/multipart"
+	"net"
 	"time"
 
-	"net"
-	//"github.com/labstack/echo/log"
+	"github.com/go-wyvern/logger"
 )
 
 type (
@@ -16,7 +16,8 @@ type (
 		SetHandler(Handler)
 
 		// SetLogger sets the logger for the HTTP server.
-		//SetLogger(log.Logger)
+		SetLogger(*logger.Logger)
+
 		Stop()
 		// Start starts th e HTTP server.
 		Start() error

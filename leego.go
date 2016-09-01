@@ -14,6 +14,7 @@ import (
 
 	"github.com/go-wyvern/Leego/engine"
 	"github.com/go-wyvern/Leego/utils"
+	"github.com/go-wyvern/logger"
 )
 
 type (
@@ -30,6 +31,7 @@ type (
 		pool               sync.Pool
 		debug              bool
 		router             *Router
+		logger             *logger.Logger
 	}
 
 	// Route contains a handler and information for matching against requests.
@@ -419,6 +421,16 @@ func (e *Leego) add(method, path string, handler HandlerFunc, middleware ...Midd
 	e.router.routes[method+path] = r
 }
 
+// Logger returns the logger instance.
+func (e *Leego) Logger() *logger.Logger {
+	return e.logger
+}
+
+// SetLogger defines a custom logger.
+func (e *Leego) SetLogger(l *logger.Logger) {
+	e.logger = l
+}
+
 func (e *Leego) ServeHTTP(req engine.Request, res engine.Response) {
 	c := e.pool.Get().(*echoContext)
 	c.Reset(req, res)
@@ -452,6 +464,7 @@ func (e *Leego) ServeHTTP(req engine.Request, res engine.Response) {
 
 // Run starts the HTTP server.
 func (e *Leego) Run(s engine.Server) {
+	s.SetLogger(e.logger)
 	s.SetHandler(e)
 	s.Start()
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-wyvern/Leego"
 	"github.com/go-wyvern/Leego/engine"
+	"github.com/go-wyvern/logger"
 )
 
 type (
@@ -15,6 +16,7 @@ type (
 		config  engine.Config
 		handler engine.Handler
 		pool    *pool
+		logger  *logger.Logger
 	}
 
 	pool struct {
@@ -89,9 +91,9 @@ func (s *Server) SetHandler(h engine.Handler) {
 }
 
 // SetLogger implements `engine.Server#SetLogger` function.
-//func (s *Server) SetLogger(l log.Logger) {
-//	s.logger = l
-//}
+func (s *Server) SetLogger(l *logger.Logger) {
+	s.logger = l
+}
 
 // Start implements `engine.Server#Start` function.
 func (s *Server) Start() error {
