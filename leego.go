@@ -27,6 +27,7 @@ type (
 		notFoundHandler    HandlerFunc
 		httpErrorHandler   HTTPErrorHandler
 		httpSuccessHandler HTTPSuccessHandler
+		binder             Binder
 		renderer           Renderer
 		pool               sync.Pool
 		debug              bool
@@ -210,6 +211,8 @@ func New() (e *Leego) {
 		return e.NewContext(nil, nil)
 	}
 	e.router = NewRouter(e)
+
+	e.SetBinder(&binder{})
 	e.SetHTTPErrorHandler(e.DefaultHTTPErrorHandler)
 	e.SetHTTPSuccessHandler(e.DefaultHTTPSuccessHandler)
 	return
@@ -271,6 +274,16 @@ func (e *Leego) SetHTTPErrorHandler(h HTTPErrorHandler) {
 
 func (e *Leego) SetHTTPSuccessHandler(h HTTPSuccessHandler) {
 	e.httpSuccessHandler = h
+}
+
+// SetBinder registers a custom binder. It's invoked by `Context#Bind()`.
+func (e *Leego) SetBinder(b Binder) {
+	e.binder = b
+}
+
+// Binder returns the binder instance.
+func (e *Leego) Binder() Binder {
+	return e.binder
 }
 
 // Pre adds middleware to the chain which is run before router.

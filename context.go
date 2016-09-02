@@ -120,9 +120,9 @@ type (
 		// Set saves data in the context.
 		Set(string, interface{})
 
-		// Bind binds the request body into provided type `i`. The default binder
-		// does it based on Content-Type header.
-		//Bind(interface{}) error
+		Bind binds the request body into provided type `i`. The default binder
+		does it based on Content-Type header.
+		Bind(interface{}) error
 
 		// Render renders a template with data and sends a text/html response with status
 		// code. Templates can be registered using `Echo.SetRenderer()`.
@@ -370,9 +370,9 @@ func (c *echoContext) Get(key string) interface{} {
 	return c.context.Value(key)
 }
 
-//func (c *echoContext) Bind(i interface{}) error {
-//	return c.echo.binder.Bind(i, c)
-//}
+func (c *echoContext) Bind(i interface{}) error {
+	return c.leego.binder.Bind(i, c)
+}
 
 //func (c *echoContext) Render(code int, name string, data interface{}) (err error) {
 //	if c.echo.renderer == nil {
