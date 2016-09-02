@@ -434,6 +434,7 @@ func (e *Leego) SetLogger(l *logger.Logger) {
 func (e *Leego) ServeHTTP(req engine.Request, res engine.Response) {
 	c := e.pool.Get().(*echoContext)
 	c.Reset(req, res)
+	c.SetLang(req.Header().Get("Accept-Language"))
 
 	// Middleware
 	h := func(Context) LeegoError {
@@ -453,9 +454,6 @@ func (e *Leego) ServeHTTP(req engine.Request, res engine.Response) {
 	}
 
 	// Execute chain
-	//if err := h(c); err != nil {
-	//	e.httpErrorHandler(err, c)
-	//}
 	err := h(c)
 	e.ResponseHandler(err, c)
 

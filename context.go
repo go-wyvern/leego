@@ -195,6 +195,10 @@ type (
 		SetData(string, interface{})
 
 		GetData(string) interface{}
+
+		Language() string
+
+		SetLang(string)
 	}
 
 	echoContext struct {
@@ -207,11 +211,25 @@ type (
 		paramsMap map[string]string
 		handler   HandlerFunc
 		leego     *Leego
+		lang      string
 		data      map[string]interface{}
 	}
 )
 
 var _ Context = new(echoContext)
+
+func (c *echoContext) Language() string {
+	return c.lang
+}
+
+func (c *echoContext) SetLang(lang string) {
+	if lang != "" {
+		lang = lang[:5]
+	} else {
+		lang = "zh-CN"
+	}
+	c.lang = lang
+}
 
 func (c *echoContext) SetParamsMap(m map[string]string) {
 	c.paramsMap = m
@@ -535,4 +553,5 @@ func (c *echoContext) Reset(req engine.Request, res engine.Response) {
 	c.request = req
 	c.response = res
 	c.handler = NotFoundHandler
+	c.data = make(map[string]interface{})
 }
