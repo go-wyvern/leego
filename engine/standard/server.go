@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/go-wyvern/Leego"
-	"github.com/go-wyvern/Leego/engine"
+	"github.com/go-wyvern/leego"
+	"github.com/go-wyvern/leego/engine"
 	"github.com/go-wyvern/logger"
 )
 

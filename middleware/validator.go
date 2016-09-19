@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"github.com/go-wyvern/Leego"
 	"github.com/go-wyvern/i18n"
+	"github.com/go-wyvern/leego"
 	"github.com/go-wyvern/validator"
 )
 

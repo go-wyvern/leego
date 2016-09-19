@@ -1,7 +1,8 @@
 package middleware
 
 import (
-	"github.com/go-wyvern/Leego"
+	"github.com/go-wyvern/leego"
+
 	"reflect"
 	"runtime"
 )

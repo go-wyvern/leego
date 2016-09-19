@@ -12,8 +12,8 @@ import (
 
 	"golang.org/x/net/context"
 
-	"github.com/go-wyvern/Leego/engine"
-	"github.com/go-wyvern/Leego/utils"
+	"github.com/go-wyvern/leego/engine"
+	"github.com/go-wyvern/leego/utils"
 	"github.com/go-wyvern/logger"
 )
 

@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/go-wyvern/Leego"
-	"github.com/go-wyvern/Leego/engine"
+	"github.com/go-wyvern/leego"
+	"github.com/go-wyvern/leego/engine"
 )
 
 type (
