@@ -127,6 +127,10 @@ type (
 
 		// SetWriter sets the HTTP response writer.
 		SetWriter(io.Writer)
+
+		Body() string
+
+		SetBody(string)
 	}
 
 	// Header defines the interface for HTTP header.

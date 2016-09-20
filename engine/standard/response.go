@@ -2,6 +2,7 @@ package standard
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -18,6 +19,7 @@ type (
 		status    int
 		size      int64
 		committed bool
+		body      string
 		writer    io.Writer
 	}
 
@@ -40,6 +42,16 @@ func NewResponse(w http.ResponseWriter) (r *Response) {
 // Header implements `engine.Response#Header` function.
 func (r *Response) Header() engine.Header {
 	return r.header
+}
+
+func (r *Response) Body() string {
+	fmt.Printf("get %s", r.body)
+	return r.body
+}
+
+func (r *Response) SetBody(b string) {
+	fmt.Printf("set")
+	r.body = b
 }
 
 // WriteHeader implements `engine.Response#WriteHeader` function.

@@ -120,8 +120,8 @@ type (
 		// Set saves data in the context.
 		Set(string, interface{})
 
-		Bind binds the request body into provided type `i`. The default binder
-		does it based on Content-Type header.
+		// Bind binds the request body into provided type `i`. The default binder
+		// does it based on Content-Type header.
 		Bind(interface{}) error
 
 		// Render renders a template with data and sends a text/html response with status
@@ -182,6 +182,8 @@ type (
 		// Echo returns the `Echo` instance.
 		Leego() *Leego
 
+		SetLogger(*logger.Logger)
+
 		// ServeContent sends static content from `io.Reader` and handles caching
 		// via `If-Modified-Since` request header. It automatically sets `Content-Type`
 		// and `Last-Modified` response headers.
@@ -205,6 +207,7 @@ type (
 		context   context.Context
 		request   engine.Request
 		response  engine.Response
+		logger    *logger.Logger
 		path      string
 		pnames    []string
 		pvalues   []string
@@ -236,7 +239,14 @@ func (c *echoContext) SetParamsMap(m map[string]string) {
 }
 
 func (c *echoContext) Logger() *logger.Logger {
+	if c.logger != nil {
+		return c.logger
+	}
 	return c.leego.logger
+}
+
+func (c *echoContext) SetLogger(l *logger.Logger) {
+	c.logger = l
 }
 
 func (c *echoContext) GetParamsMap() map[string]string {
@@ -404,6 +414,7 @@ func (c *echoContext) String(code int, s string) (err error) {
 
 func (c *echoContext) JSON(code int, i interface{}) (err error) {
 	b, err := json.Marshal(i)
+	c.Response().SetBody(string(b))
 	//if c.leego.Debug() {
 	//	b, err = json.MarshalIndent(i, "", "  ")
 	//}
@@ -439,6 +450,7 @@ func (c *echoContext) JSONP(code int, callback string, i interface{}) (err error
 
 func (c *echoContext) XML(code int, i interface{}) (err error) {
 	b, err := xml.Marshal(i)
+	c.Response().SetBody(string(b))
 	//if c.echo.Debug() {
 	//	b, err = xml.MarshalIndent(i, "", "  ")
 	//}
