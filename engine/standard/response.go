@@ -2,7 +2,6 @@ package standard
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -45,12 +44,10 @@ func (r *Response) Header() engine.Header {
 }
 
 func (r *Response) Body() string {
-	fmt.Printf("get %s", r.body)
 	return r.body
 }
 
 func (r *Response) SetBody(b string) {
-	fmt.Printf("set")
 	r.body = b
 }
 

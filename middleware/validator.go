@@ -50,7 +50,8 @@ func ValidatorWithConfig(config ValidatorConfig) leego.MiddlewareFunc {
 			if config.Validate == nil {
 				return next(c)
 			}
-			err := validator.Validate(c.Request().FormParams(), config.Validate)
+			valid := config.Validate.Clone()
+			err := validator.Validate(c.Request().FormParams(), valid)
 			if err != nil {
 				if pErr, ok := err.(*validator.ParamsError); ok {
 					pErr.Text = i18n.Translate(pErr.Text, c.Language())
@@ -59,7 +60,7 @@ func ValidatorWithConfig(config ValidatorConfig) leego.MiddlewareFunc {
 					return config.FormatLeegoError(err, config.Name)
 				}
 			}
-			err = validator.UrlValidator(c.GetParamsMap(), config.Validate)
+			err = validator.UrlValidator(c.GetParamsMap(), valid)
 			if err != nil {
 				if pErr, ok := err.(*validator.ParamsError); ok {
 					pErr.Text = i18n.Translate(pErr.Text, c.Language())
@@ -68,6 +69,7 @@ func ValidatorWithConfig(config ValidatorConfig) leego.MiddlewareFunc {
 					return config.FormatLeegoError(err, config.Name)
 				}
 			}
+			c.SetData("valid", valid)
 			return next(c)
 		}
 	}
