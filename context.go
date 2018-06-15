@@ -226,7 +226,7 @@ func (c *echoContext) Language() string {
 }
 
 func (c *echoContext) SetLang(lang string) {
-	if lang != "" {
+	if lang != "" && len(lang) >= 5 {
 		lang = lang[:5]
 	} else {
 		lang = "zh-CN"
