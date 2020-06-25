@@ -16,7 +16,7 @@ func TestAddTrailingSlash(t *testing.T) {
 	req := standard.NewRequest(httptest.NewRequest(leego.GET, "/add-slash", nil))
 	rec := standard.NewResponse(httptest.NewRecorder())
 	c := lee.NewContext(req, rec)
-	h := AddTrailingSlash()(func(c leego.Context) error {
+	h := AddTrailingSlash()(func(c leego.Context) leego.LeeError {
 		return nil
 	})
 	h(c)
@@ -29,7 +29,7 @@ func TestAddTrailingSlash(t *testing.T) {
 	c = lee.NewContext(req, rec)
 	h = AddTrailingSlashWithConfig(TrailingSlashConfig{
 		RedirectCode: http.StatusMovedPermanently,
-	})(func(c leego.Context) error {
+	})(func(c leego.Context) leego.LeeError {
 		return nil
 	})
 	h(c)
@@ -42,7 +42,7 @@ func TestRemoveTrailingSlash(t *testing.T) {
 	req := standard.NewRequest(httptest.NewRequest(leego.GET, "/remove-slash/", nil))
 	rec := standard.NewResponse(httptest.NewRecorder())
 	c := lee.NewContext(req, rec)
-	h := RemoveTrailingSlash()(func(c leego.Context) error {
+	h := RemoveTrailingSlash()(func(c leego.Context) leego.LeeError {
 		return nil
 	})
 	h(c)
@@ -55,7 +55,7 @@ func TestRemoveTrailingSlash(t *testing.T) {
 	c = lee.NewContext(req, rec)
 	h = RemoveTrailingSlashWithConfig(TrailingSlashConfig{
 		RedirectCode: http.StatusMovedPermanently,
-	})(func(c leego.Context) error {
+	})(func(c leego.Context) leego.LeeError {
 		return nil
 	})
 	h(c)
@@ -66,7 +66,7 @@ func TestRemoveTrailingSlash(t *testing.T) {
 	req = standard.NewRequest(httptest.NewRequest(leego.GET, "http://localhost", nil))
 	rec = standard.NewResponse(httptest.NewRecorder())
 	c = lee.NewContext(req, rec)
-	h = RemoveTrailingSlash()(func(c leego.Context) error {
+	h = RemoveTrailingSlash()(func(c leego.Context) leego.LeeError {
 		return nil
 	})
 	h(c)
