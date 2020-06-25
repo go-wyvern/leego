@@ -1,7 +1,7 @@
 ![leego](.github/leego.jpeg?raw=true)
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/go-wyvern/leego)](https://goreportcard.com/report/github.com/go-wyvern/leego)
-![Build Status](https://travis-ci.org/go-wyvern/leego.svg?branch=master)
+[![Build Status](https://api.travis-ci.org/go-wyvern/leego.svg?branch=master)](https://travis-ci.org/github/go-wyvern/leego)
 [![codecov](https://codecov.io/gh/go-wyvern/leego/branch/master/graph/badge.svg)](https://codecov.io/gh/go-wyvern/leego)
 [![License](http://img.shields.io/badge/license-mit-blue.svg?style=flat-square)](https://raw.githubusercontent.com/go-wyvern/leego/master/LICENSE)
 
