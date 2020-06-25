@@ -6,13 +6,15 @@ import (
 	"testing"
 
 	"github.com/go-wyvern/leego"
+	"github.com/go-wyvern/leego/engine/standard"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestAddTrailingSlash(t *testing.T) {
 	lee := leego.New()
-	req := httptest.NewRequest(leego.GET, "/add-slash", nil)
-	rec := httptest.NewRecorder()
+
+	req := standard.NewRequest(httptest.NewRequest(leego.GET, "/add-slash", nil))
+	rec := standard.NewResponse(httptest.NewRecorder())
 	c := lee.NewContext(req, rec)
 	h := AddTrailingSlash()(func(c lee.Context) error {
 		return nil
@@ -22,8 +24,8 @@ func TestAddTrailingSlash(t *testing.T) {
 	assert.Equal(t, "/add-slash/", req.URI())
 
 	// With config
-	req = httptest.NewRequest(leego.GET, "/add-slash?key=value", nil)
-	rec = httptest.NewRecorder()
+	req := standard.NewRequest(httptest.NewRequest(leego.GET, "/add-slash?key=value", nil))
+	rec := standard.NewResponse(httptest.NewRecorder())
 	c = lee.NewContext(req, rec)
 	h = AddTrailingSlashWithConfig(TrailingSlashConfig{
 		RedirectCode: http.StatusMovedPermanently,
@@ -37,8 +39,8 @@ func TestAddTrailingSlash(t *testing.T) {
 
 func TestRemoveTrailingSlash(t *testing.T) {
 	lee := leego.New()
-	req := httptest.NewRequest(leego.GET, "/remove-slash/", nil)
-	rec := httptest.NewRecorder()
+	req := standard.NewRequest(httptest.NewRequest(leego.GET, "/remove-slash/", nil))
+	rec := standard.NewResponse(httptest.NewRecorder())
 	c := lee.NewContext(req, rec)
 	h := RemoveTrailingSlash()(func(c leego.Context) error {
 		return nil
@@ -48,8 +50,8 @@ func TestRemoveTrailingSlash(t *testing.T) {
 	assert.Equal(t, "/remove-slash", req.URI())
 
 	// With config
-	req = httptest.NewRequest(leego.GET, "/remove-slash/?key=value", nil)
-	rec = httptest.NewRecorder()
+	req := standard.NewRequest(httptest.NewRequest(leego.GET, "/remove-slash/?key=value", nil))
+	rec := standard.NewResponse(httptest.NewRecorder())
 	c = lee.NewContext(req, rec)
 	h = RemoveTrailingSlashWithConfig(TrailingSlashConfig{
 		RedirectCode: http.StatusMovedPermanently,
@@ -61,8 +63,8 @@ func TestRemoveTrailingSlash(t *testing.T) {
 	assert.Equal(t, "/remove-slash?key=value", rec.Header().Get(leego.HeaderLocation))
 
 	// With bare URL
-	req = httptest.NewRequest(leego.GET, "http://localhost", nil)
-	rec = httptest.NewRecorder()
+	req := standard.NewRequest(httptest.NewRequest(leego.GET, "http://localhost", nil))
+	rec := standard.NewResponse(httptest.NewRecorder())
 	c = lee.NewContext(req, rec)
 	h = RemoveTrailingSlash()(func(c leego.Context) error {
 		return nil
