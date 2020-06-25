@@ -2,6 +2,7 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/go-wyvern/leego)](https://goreportcard.com/report/github.com/go-wyvern/leego)
 ![Build Status](https://travis-ci.org/go-wyvern/leego.svg?branch=master)
+[![codecov](https://codecov.io/gh/go-wyvern/leego/branch/master/graph/badge.svg)](https://codecov.io/gh/go-wyvern/leego)
 
 # Supported Go versions
 
