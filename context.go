@@ -505,7 +505,7 @@ func (c *leegoContext) NoContent(code int) error {
 }
 
 func (c *leegoContext) Redirect(code int, url string) error {
-	if code < http.StatusMultiplleegoices || code > http.StatusTemporaryRedirect {
+	if code < http.StatusMultipleChoices || code > http.StatusTemporaryRedirect {
 		return ErrInvalidRedirectCode
 	}
 	c.response.Header().Set(HeaderLocation, url)
