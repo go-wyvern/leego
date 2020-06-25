@@ -204,7 +204,7 @@ func (e *HTTPError) Error() string {
 	return e.Message
 }
 
-// New creates an instance of Echo.
+// New creates an instance of leego.
 func New() (e *Leego) {
 	e = &Leego{maxParam: new(int)}
 	e.pool.New = func() interface{} {
@@ -220,7 +220,7 @@ func New() (e *Leego) {
 
 // NewContext returns a Context instance.
 func (e *Leego) NewContext(req engine.Request, res engine.Response) Context {
-	return &echoContext{
+	return &leegoContext{
 		context:  context.Background(),
 		request:  req,
 		response: res,
@@ -445,7 +445,7 @@ func (e *Leego) SetLogger(l *logger.Logger) {
 }
 
 func (e *Leego) ServeHTTP(req engine.Request, res engine.Response) {
-	c := e.pool.Get().(*echoContext)
+	c := e.pool.Get().(*leegoContext)
 	c.Reset(req, res)
 	c.SetLang(req.Header().Get("Accept-Language"))
 
@@ -517,7 +517,7 @@ func (e *Leego) URL(h HandlerFunc, params ...interface{}) string {
 	return e.URI(h, params...)
 }
 
-// WrapMiddleware wrap `echo.HandlerFunc` into `echo.MiddlewareFunc`.
+// WrapMiddleware wrap `leego.HandlerFunc` into `leego.MiddlewareFunc`.
 func WrapMiddleware(h HandlerFunc) MiddlewareFunc {
 	return func(next HandlerFunc) HandlerFunc {
 		return func(c Context) LeegoError {

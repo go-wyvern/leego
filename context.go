@@ -125,7 +125,7 @@ type (
 		Bind(interface{}) error
 
 		// Render renders a template with data and sends a text/html response with status
-		// code. Templates can be registered using `Echo.SetRenderer()`.
+		// code. Templates can be registered using `leego.SetRenderer()`.
 		//Render(int, string, interface{}) error
 
 		// HTML sends an HTTP response with status code.
@@ -179,7 +179,7 @@ type (
 		// Logger returns the `Logger` instance.
 		Logger() *logger.Logger
 
-		// Echo returns the `Echo` instance.
+		// leego returns the `leego` instance.
 		Leego() *Leego
 
 		SetLogger(*logger.Logger)
@@ -190,8 +190,8 @@ type (
 		ServeContent(io.ReadSeeker, string, time.Time) error
 
 		// Reset resets the context after request completes. It must be called along
-		// with `Echo#AcquireContext()` and `Echo#ReleaseContext()`.
-		// See `Echo#ServeHTTP()`
+		// with `leego#AcquireContext()` and `leego#ReleaseContext()`.
+		// See `leego#ServeHTTP()`
 		Reset(engine.Request, engine.Response)
 
 		SetData(string, interface{})
@@ -203,7 +203,7 @@ type (
 		SetLang(string)
 	}
 
-	echoContext struct {
+	leegoContext struct {
 		context   context.Context
 		request   engine.Request
 		response  engine.Response
@@ -219,13 +219,13 @@ type (
 	}
 )
 
-var _ Context = new(echoContext)
+var _ Context = new(leegoContext)
 
-func (c *echoContext) Language() string {
+func (c *leegoContext) Language() string {
 	return c.lang
 }
 
-func (c *echoContext) SetLang(lang string) {
+func (c *leegoContext) SetLang(lang string) {
 	if lang != "" && len(lang) >= 5 {
 		lang = lang[:5]
 	} else {
@@ -234,74 +234,74 @@ func (c *echoContext) SetLang(lang string) {
 	c.lang = lang
 }
 
-func (c *echoContext) SetParamsMap(m map[string]string) {
+func (c *leegoContext) SetParamsMap(m map[string]string) {
 	c.paramsMap = m
 }
 
-func (c *echoContext) Logger() *logger.Logger {
+func (c *leegoContext) Logger() *logger.Logger {
 	if c.logger != nil {
 		return c.logger
 	}
 	return c.leego.logger
 }
 
-func (c *echoContext) SetLogger(l *logger.Logger) {
+func (c *leegoContext) SetLogger(l *logger.Logger) {
 	c.logger = l
 }
 
-func (c *echoContext) GetParamsMap() map[string]string {
+func (c *leegoContext) GetParamsMap() map[string]string {
 	return c.paramsMap
 }
 
-func (c *echoContext) SetData(key string, data interface{}) {
+func (c *leegoContext) SetData(key string, data interface{}) {
 	c.data[key] = data
 }
 
-func (c *echoContext) GetData(key string) interface{} {
+func (c *leegoContext) GetData(key string) interface{} {
 	return c.data[key]
 }
 
-func (c *echoContext) Context() context.Context {
+func (c *leegoContext) Context() context.Context {
 	return c.context
 }
 
-func (c *echoContext) SetContext(ctx context.Context) {
+func (c *leegoContext) SetContext(ctx context.Context) {
 	c.context = ctx
 }
 
-func (c *echoContext) Deadline() (deadline time.Time, ok bool) {
+func (c *leegoContext) Deadline() (deadline time.Time, ok bool) {
 	return c.context.Deadline()
 }
 
-func (c *echoContext) Done() <-chan struct{} {
+func (c *leegoContext) Done() <-chan struct{} {
 	return c.context.Done()
 }
 
-func (c *echoContext) Err() error {
+func (c *leegoContext) Err() error {
 	return c.context.Err()
 }
 
-func (c *echoContext) Value(key interface{}) interface{} {
+func (c *leegoContext) Value(key interface{}) interface{} {
 	return c.context.Value(key)
 }
 
-func (c *echoContext) Request() engine.Request {
+func (c *leegoContext) Request() engine.Request {
 	return c.request
 }
 
-func (c *echoContext) Response() engine.Response {
+func (c *leegoContext) Response() engine.Response {
 	return c.response
 }
 
-func (c *echoContext) Path() string {
+func (c *leegoContext) Path() string {
 	return c.path
 }
 
-func (c *echoContext) SetPath(p string) {
+func (c *leegoContext) SetPath(p string) {
 	c.path = p
 }
 
-func (c *echoContext) P(i int) (value string) {
+func (c *leegoContext) P(i int) (value string) {
 	l := len(c.pnames)
 	if i < l {
 		value = c.pvalues[i]
@@ -309,7 +309,7 @@ func (c *echoContext) P(i int) (value string) {
 	return
 }
 
-func (c *echoContext) Param(name string) (value string) {
+func (c *leegoContext) Param(name string) (value string) {
 	l := len(c.pnames)
 	for i, n := range c.pnames {
 		if n == name && i < l {
@@ -320,76 +320,76 @@ func (c *echoContext) Param(name string) (value string) {
 	return
 }
 
-func (c *echoContext) ParamNames() []string {
+func (c *leegoContext) ParamNames() []string {
 	return c.pnames
 }
 
-func (c *echoContext) SetParamNames(names ...string) {
+func (c *leegoContext) SetParamNames(names ...string) {
 	c.pnames = names
 }
 
-func (c *echoContext) ParamValues() []string {
+func (c *leegoContext) ParamValues() []string {
 	return c.pvalues
 }
 
-func (c *echoContext) SetParamValues(values ...string) {
+func (c *leegoContext) SetParamValues(values ...string) {
 	c.pvalues = values
 }
 
-func (c *echoContext) QueryParam(name string) string {
+func (c *leegoContext) QueryParam(name string) string {
 	return c.request.URL().QueryParam(name)
 }
 
-func (c *echoContext) QueryParams() map[string][]string {
+func (c *leegoContext) QueryParams() map[string][]string {
 	return c.request.URL().QueryParams()
 }
 
-func (c *echoContext) FormValue(name string) string {
+func (c *leegoContext) FormValue(name string) string {
 	return c.request.FormValue(name)
 }
 
-func (c *echoContext) FormParams() map[string][]string {
+func (c *leegoContext) FormParams() map[string][]string {
 	return c.request.FormParams()
 }
 
-func (c *echoContext) FormFile(name string) (*multipart.FileHeader, error) {
+func (c *leegoContext) FormFile(name string) (*multipart.FileHeader, error) {
 	return c.request.FormFile(name)
 }
 
-func (c *echoContext) MultipartForm() (*multipart.Form, error) {
+func (c *leegoContext) MultipartForm() (*multipart.Form, error) {
 	return c.request.MultipartForm()
 }
 
-func (c *echoContext) Cookie(name string) (engine.Cookie, error) {
+func (c *leegoContext) Cookie(name string) (engine.Cookie, error) {
 	return c.request.Cookie(name)
 }
 
-func (c *echoContext) SetCookie(cookie engine.Cookie) {
+func (c *leegoContext) SetCookie(cookie engine.Cookie) {
 	c.response.SetCookie(cookie)
 }
 
-func (c *echoContext) Cookies() []engine.Cookie {
+func (c *leegoContext) Cookies() []engine.Cookie {
 	return c.request.Cookies()
 }
 
-func (c *echoContext) Set(key string, val interface{}) {
+func (c *leegoContext) Set(key string, val interface{}) {
 	c.context = context.WithValue(c.context, key, val)
 }
 
-func (c *echoContext) Get(key string) interface{} {
+func (c *leegoContext) Get(key string) interface{} {
 	return c.context.Value(key)
 }
 
-func (c *echoContext) Bind(i interface{}) error {
+func (c *leegoContext) Bind(i interface{}) error {
 	return c.leego.binder.Bind(i, c)
 }
 
-//func (c *echoContext) Render(code int, name string, data interface{}) (err error) {
-//	if c.echo.renderer == nil {
+//func (c *leegoContext) Render(code int, name string, data interface{}) (err error) {
+//	if c.leego.renderer == nil {
 //		return ErrRendererNotRegistered
 //	}
 //	buf := new(bytes.Buffer)
-//	if err = c.echo.renderer.Render(buf, name, data, c); err != nil {
+//	if err = c.leego.renderer.Render(buf, name, data, c); err != nil {
 //		return
 //	}
 //	c.response.Header().Set(HeaderContentType, MIMETextHTMLCharsetUTF8)
@@ -398,21 +398,21 @@ func (c *echoContext) Bind(i interface{}) error {
 //	return
 //}
 
-func (c *echoContext) HTML(code int, html string) (err error) {
+func (c *leegoContext) HTML(code int, html string) (err error) {
 	c.response.Header().Set(HeaderContentType, MIMETextHTMLCharsetUTF8)
 	c.response.WriteHeader(code)
 	_, err = c.response.Write([]byte(html))
 	return
 }
 
-func (c *echoContext) String(code int, s string) (err error) {
+func (c *leegoContext) String(code int, s string) (err error) {
 	c.response.Header().Set(HeaderContentType, MIMETextPlainCharsetUTF8)
 	c.response.WriteHeader(code)
 	_, err = c.response.Write([]byte(s))
 	return
 }
 
-func (c *echoContext) JSON(code int, i interface{}) (err error) {
+func (c *leegoContext) JSON(code int, i interface{}) (err error) {
 	b, err := json.Marshal(i)
 	c.Response().SetBody(string(b))
 	//if c.leego.Debug() {
@@ -424,14 +424,14 @@ func (c *echoContext) JSON(code int, i interface{}) (err error) {
 	return c.JSONBlob(code, b)
 }
 
-func (c *echoContext) JSONBlob(code int, b []byte) (err error) {
+func (c *leegoContext) JSONBlob(code int, b []byte) (err error) {
 	c.response.Header().Set(HeaderContentType, MIMEApplicationJSONCharsetUTF8)
 	c.response.WriteHeader(code)
 	_, err = c.response.Write(b)
 	return
 }
 
-func (c *echoContext) JSONP(code int, callback string, i interface{}) (err error) {
+func (c *leegoContext) JSONP(code int, callback string, i interface{}) (err error) {
 	b, err := json.Marshal(i)
 	if err != nil {
 		return err
@@ -448,10 +448,10 @@ func (c *echoContext) JSONP(code int, callback string, i interface{}) (err error
 	return
 }
 
-func (c *echoContext) XML(code int, i interface{}) (err error) {
+func (c *leegoContext) XML(code int, i interface{}) (err error) {
 	b, err := xml.Marshal(i)
 	c.Response().SetBody(string(b))
-	//if c.echo.Debug() {
+	//if c.leego.Debug() {
 	//	b, err = xml.MarshalIndent(i, "", "  ")
 	//}
 	if err != nil {
@@ -460,7 +460,7 @@ func (c *echoContext) XML(code int, i interface{}) (err error) {
 	return c.XMLBlob(code, b)
 }
 
-func (c *echoContext) XMLBlob(code int, b []byte) (err error) {
+func (c *leegoContext) XMLBlob(code int, b []byte) (err error) {
 	c.response.Header().Set(HeaderContentType, MIMEApplicationXMLCharsetUTF8)
 	c.response.WriteHeader(code)
 	if _, err = c.response.Write([]byte(xml.Header)); err != nil {
@@ -470,7 +470,7 @@ func (c *echoContext) XMLBlob(code int, b []byte) (err error) {
 	return
 }
 
-func (c *echoContext) File(file string) error {
+func (c *leegoContext) File(file string) error {
 	f, err := os.Open(file)
 	if err != nil {
 		return ErrNotFound
@@ -491,7 +491,7 @@ func (c *echoContext) File(file string) error {
 	return c.ServeContent(f, fi.Name(), fi.ModTime())
 }
 
-func (c *echoContext) Attachment(r io.ReadSeeker, name string) (err error) {
+func (c *leegoContext) Attachment(r io.ReadSeeker, name string) (err error) {
 	c.response.Header().Set(HeaderContentType, ContentTypeByExtension(name))
 	c.response.Header().Set(HeaderContentDisposition, "attachment; filename="+name)
 	c.response.WriteHeader(http.StatusOK)
@@ -499,13 +499,13 @@ func (c *echoContext) Attachment(r io.ReadSeeker, name string) (err error) {
 	return
 }
 
-func (c *echoContext) NoContent(code int) error {
+func (c *leegoContext) NoContent(code int) error {
 	c.response.WriteHeader(code)
 	return nil
 }
 
-func (c *echoContext) Redirect(code int, url string) error {
-	if code < http.StatusMultipleChoices || code > http.StatusTemporaryRedirect {
+func (c *leegoContext) Redirect(code int, url string) error {
+	if code < http.StatusMultiplleegoices || code > http.StatusTemporaryRedirect {
 		return ErrInvalidRedirectCode
 	}
 	c.response.Header().Set(HeaderLocation, url)
@@ -513,27 +513,27 @@ func (c *echoContext) Redirect(code int, url string) error {
 	return nil
 }
 
-func (c *echoContext) Error(err error) {
+func (c *leegoContext) Error(err error) {
 	c.leego.httpErrorHandler(err, c)
 }
 
-func (c *echoContext) Leego() *Leego {
+func (c *leegoContext) Leego() *Leego {
 	return c.leego
 }
 
-func (c *echoContext) Handler() HandlerFunc {
+func (c *leegoContext) Handler() HandlerFunc {
 	return c.handler
 }
 
-func (c *echoContext) SetHandler(h HandlerFunc) {
+func (c *leegoContext) SetHandler(h HandlerFunc) {
 	c.handler = h
 }
 
-//func (c *echoContext) Logger() log.Logger {
-//	return c.echo.logger
+//func (c *leegoContext) Logger() log.Logger {
+//	return c.leego.logger
 //}
 
-func (c *echoContext) ServeContent(content io.ReadSeeker, name string, modtime time.Time) error {
+func (c *leegoContext) ServeContent(content io.ReadSeeker, name string, modtime time.Time) error {
 	req := c.Request()
 	res := c.Response()
 
@@ -560,7 +560,7 @@ func ContentTypeByExtension(name string) (t string) {
 	return
 }
 
-func (c *echoContext) Reset(req engine.Request, res engine.Response) {
+func (c *leegoContext) Reset(req engine.Request, res engine.Response) {
 	c.context = context.Background()
 	c.request = req
 	c.response = res

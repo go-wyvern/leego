@@ -1,7 +1,7 @@
 package leego
 
 type (
-	// Router is the registry of all registered routes for an `Echo` instance for
+	// Router is the registry of all registered routes for an `leego` instance for
 	// request matching and URL path parameter parsing.
 	Router struct {
 		tree   *node
@@ -283,9 +283,9 @@ func (n *node) checkMethodNotAllowed() HandlerFunc {
 //
 // For performance:
 //
-// - Get context from `Echo#AcquireContext()`
+// - Get context from `leego#AcquireContext()`
 // - Reset it `Context#Reset()`
-// - Return it `Echo#ReleaseContext()`.
+// - Return it `leego#ReleaseContext()`.
 func (r *Router) Find(method, path string, context Context) {
 	cn := r.tree // Current node as root
 

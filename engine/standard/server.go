@@ -149,7 +149,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.pool.header.Put(resHdr)
 }
 
-// WrapHandler wraps `http.Handler` into `echo.HandlerFunc`.
+// WrapHandler wraps `http.Handler` into `leego.HandlerFunc`.
 func WrapHandler(h http.Handler) leego.HandlerFunc {
 	return func(c leego.Context) leego.LeegoError {
 		req := c.Request().(*Request)
@@ -159,7 +159,7 @@ func WrapHandler(h http.Handler) leego.HandlerFunc {
 	}
 }
 
-// WrapMiddleware wraps `func(http.Handler) http.Handler` into `echo.MiddlewareFunc`
+// WrapMiddleware wraps `func(http.Handler) http.Handler` into `leego.MiddlewareFunc`
 func WrapMiddleware(m func(http.Handler) http.Handler) leego.MiddlewareFunc {
 	return func(next leego.HandlerFunc) leego.HandlerFunc {
 		return func(c leego.Context) (err leego.LeegoError) {

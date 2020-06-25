@@ -3,7 +3,7 @@ package leego
 type (
 	// Group is a set of sub-routes for a specified route. It can be used for inner
 	// routes that share a common middlware or functionality that should be separate
-	// from the parent echo instance while still inheriting from it.
+	// from the parent leego instance while still inheriting from it.
 	Group struct {
 		prefix     string
 		middleware []MiddlewareFunc
@@ -11,7 +11,7 @@ type (
 	}
 )
 
-// Use implements `Echo#Use()` for sub-routes within the Group.
+// Use implements `leego#Use()` for sub-routes within the Group.
 func (g *Group) Use(m ...MiddlewareFunc) {
 	g.middleware = append(g.middleware, m...)
 	// Allow all requests to reach the group as they might get dropped if router
@@ -21,7 +21,7 @@ func (g *Group) Use(m ...MiddlewareFunc) {
 	}, g.middleware...)
 }
 
-// CONNECT implements `Echo#CONNECT()` for sub-routes within the Group.
+// CONNECT implements `leego#CONNECT()` for sub-routes within the Group.
 func (g *Group) CONNECT(path string, h HandlerFunc, m ...MiddlewareFunc) {
 	g.add(CONNECT, path, h, m...)
 }
@@ -31,7 +31,7 @@ func (g *Group) Connect(path string, h HandlerFunc, m ...MiddlewareFunc) {
 	g.add(CONNECT, path, h, m...)
 }
 
-// DELETE implements `Echo#DELETE()` for sub-routes within the Group.
+// DELETE implements `leego#DELETE()` for sub-routes within the Group.
 func (g *Group) DELETE(path string, h HandlerFunc, m ...MiddlewareFunc) {
 	g.add(DELETE, path, h, m...)
 }
@@ -41,7 +41,7 @@ func (g *Group) Delete(path string, h HandlerFunc, m ...MiddlewareFunc) {
 	g.add(DELETE, path, h, m...)
 }
 
-// GET implements `Echo#GET()` for sub-routes within the Group.
+// GET implements `leego#GET()` for sub-routes within the Group.
 func (g *Group) GET(path string, h HandlerFunc, m ...MiddlewareFunc) {
 	g.add(GET, path, h, m...)
 }
@@ -51,7 +51,7 @@ func (g *Group) Get(path string, h HandlerFunc, m ...MiddlewareFunc) {
 	g.add(GET, path, h, m...)
 }
 
-// HEAD implements `Echo#HEAD()` for sub-routes within the Group.
+// HEAD implements `leego#HEAD()` for sub-routes within the Group.
 func (g *Group) HEAD(path string, h HandlerFunc, m ...MiddlewareFunc) {
 	g.add(HEAD, path, h, m...)
 }
@@ -61,7 +61,7 @@ func (g *Group) Head(path string, h HandlerFunc, m ...MiddlewareFunc) {
 	g.add(HEAD, path, h, m...)
 }
 
-// OPTIONS implements `Echo#OPTIONS()` for sub-routes within the Group.
+// OPTIONS implements `leego#OPTIONS()` for sub-routes within the Group.
 func (g *Group) OPTIONS(path string, h HandlerFunc, m ...MiddlewareFunc) {
 	g.add(OPTIONS, path, h, m...)
 }
@@ -71,7 +71,7 @@ func (g *Group) Options(path string, h HandlerFunc, m ...MiddlewareFunc) {
 	g.add(OPTIONS, path, h, m...)
 }
 
-// PATCH implements `Echo#PATCH()` for sub-routes within the Group.
+// PATCH implements `leego#PATCH()` for sub-routes within the Group.
 func (g *Group) PATCH(path string, h HandlerFunc, m ...MiddlewareFunc) {
 	g.add(PATCH, path, h, m...)
 }
@@ -81,7 +81,7 @@ func (g *Group) Patch(path string, h HandlerFunc, m ...MiddlewareFunc) {
 	g.add(PATCH, path, h, m...)
 }
 
-// POST implements `Echo#POST()` for sub-routes within the Group.
+// POST implements `leego#POST()` for sub-routes within the Group.
 func (g *Group) POST(path string, h HandlerFunc, m ...MiddlewareFunc) {
 	g.add(POST, path, h, m...)
 }
@@ -91,7 +91,7 @@ func (g *Group) Post(path string, h HandlerFunc, m ...MiddlewareFunc) {
 	g.add(POST, path, h, m...)
 }
 
-// PUT implements `Echo#PUT()` for sub-routes within the Group.
+// PUT implements `leego#PUT()` for sub-routes within the Group.
 func (g *Group) PUT(path string, h HandlerFunc, m ...MiddlewareFunc) {
 	g.add(PUT, path, h, m...)
 }
@@ -101,7 +101,7 @@ func (g *Group) Put(path string, h HandlerFunc, m ...MiddlewareFunc) {
 	g.add(PUT, path, h, m...)
 }
 
-// TRACE implements `Echo#TRACE()` for sub-routes within the Group.
+// TRACE implements `leego#TRACE()` for sub-routes within the Group.
 func (g *Group) TRACE(path string, h HandlerFunc, m ...MiddlewareFunc) {
 	g.add(TRACE, path, h, m...)
 }
@@ -111,14 +111,14 @@ func (g *Group) Trace(path string, h HandlerFunc, m ...MiddlewareFunc) {
 	g.add(TRACE, path, h, m...)
 }
 
-// Any implements `Echo#Any()` for sub-routes within the Group.
+// Any implements `leego#Any()` for sub-routes within the Group.
 func (g *Group) Any(path string, handler HandlerFunc, middleware ...MiddlewareFunc) {
 	for _, m := range methods {
 		g.add(m, path, handler, middleware...)
 	}
 }
 
-// Match implements `Echo#Match()` for sub-routes within the Group.
+// Match implements `leego#Match()` for sub-routes within the Group.
 func (g *Group) Match(methods []string, path string, handler HandlerFunc, middleware ...MiddlewareFunc) {
 	for _, m := range methods {
 		g.add(m, path, handler, middleware...)
