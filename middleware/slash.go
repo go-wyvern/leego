@@ -40,7 +40,7 @@ func AddTrailingSlashWithConfig(config TrailingSlashConfig) leego.MiddlewareFunc
 	}
 
 	return func(next leego.HandlerFunc) leego.HandlerFunc {
-		return func(c leego.Context) leego.LeegoError {
+		return func(c leego.Context) leego.LeeError {
 			if config.Skipper(c) {
 				return next(c)
 			}
@@ -87,7 +87,7 @@ func RemoveTrailingSlashWithConfig(config TrailingSlashConfig) leego.MiddlewareF
 	}
 
 	return func(next leego.HandlerFunc) leego.HandlerFunc {
-		return func(c leego.Context) leego.LeegoError {
+		return func(c leego.Context) leego.LeeError {
 			if config.Skipper(c) {
 				return next(c)
 			}

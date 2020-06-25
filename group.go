@@ -16,7 +16,7 @@ func (g *Group) Use(m ...MiddlewareFunc) {
 	g.middleware = append(g.middleware, m...)
 	// Allow all requests to reach the group as they might get dropped if router
 	// doesn't find a match, making none of the group middleware process.
-	g.leego.Any(g.prefix+"*", func(c Context) LeegoError {
+	g.leego.Any(g.prefix+"*", func(c Context) LeeError {
 		return ErrNotFound
 	}, g.middleware...)
 }

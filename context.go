@@ -372,7 +372,7 @@ func (c *leegoContext) Cookies() []engine.Cookie {
 	return c.request.Cookies()
 }
 
-func (c *leegoContext) Set(key string, val interface{}) {
+func (c *leegoContext) Set(key interface{}, val interface{}) {
 	c.context = context.WithValue(c.context, key, val)
 }
 

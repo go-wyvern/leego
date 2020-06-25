@@ -13,7 +13,6 @@ import (
 	"golang.org/x/net/context"
 
 	"github.com/go-wyvern/leego/engine"
-	"github.com/go-wyvern/leego/utils"
 	"github.com/go-wyvern/logger"
 )
 
@@ -23,7 +22,6 @@ type (
 		premiddleware      []MiddlewareFunc
 		middleware         []MiddlewareFunc
 		maxParam           *int
-		wg                 utils.WaitGroupWrapper
 		notFoundHandler    HandlerFunc
 		httpErrorHandler   HTTPErrorHandler
 		httpSuccessHandler HTTPSuccessHandler
@@ -52,15 +50,17 @@ type (
 	MiddlewareFunc func(HandlerFunc) HandlerFunc
 
 	// HandlerFunc defines a function to server HTTP requests.
-	HandlerFunc func(Context) LeegoError
+	HandlerFunc func(Context) LeeError
 
 	// HTTPErrorHandler is a centralized HTTP error handler.
-	HTTPErrorHandler   func(LeegoError, Context)
+	HTTPErrorHandler func(LeeError, Context)
+	// HTTPSuccessHandler is a centralized HTTP success handler.
 	HTTPSuccessHandler func(Context)
+	// ResponseHandler is a response handler.
+	ResponseHandler func(LeeError, Context)
 
-	ResponseHandler func(LeegoError, Context)
-
-	LeegoError interface {
+	// LeeError is the interface that define leego error set
+	LeeError interface {
 		Error() string
 	}
 
@@ -180,11 +180,11 @@ var (
 
 // Error handlers
 var (
-	NotFoundHandler = func(c Context) LeegoError {
+	NotFoundHandler = func(c Context) LeeError {
 		return ErrNotFound
 	}
 
-	MethodNotAllowedHandler = func(c Context) LeegoError {
+	MethodNotAllowedHandler = func(c Context) LeeError {
 		return ErrMethodNotAllowed
 	}
 )
@@ -231,7 +231,8 @@ func (e *Leego) NewContext(req engine.Request, res engine.Response) Context {
 	}
 }
 
-func (e *Leego) ResponseHandler(err LeegoError, c Context) {
+// ResponseHandler response do this handler
+func (e *Leego) ResponseHandler(err LeeError, c Context) {
 	if err != nil {
 		e.httpErrorHandler(err, c)
 	} else {
@@ -246,7 +247,7 @@ func (e *Leego) Router() *Router {
 }
 
 // DefaultHTTPErrorHandler invokes the default HTTP error handler.
-func (e *Leego) DefaultHTTPErrorHandler(err LeegoError, c Context) {
+func (e *Leego) DefaultHTTPErrorHandler(err LeeError, c Context) {
 	code := http.StatusInternalServerError
 	msg := http.StatusText(code)
 	if he, ok := err.(*HTTPError); ok {
@@ -266,12 +267,15 @@ func (e *Leego) DefaultHTTPErrorHandler(err LeegoError, c Context) {
 	}
 }
 
+// DefaultHTTPSuccessHandler this is default handler when Success do it
 func (e *Leego) DefaultHTTPSuccessHandler(c Context) {}
 
+// SetHTTPErrorHandler set http error handler
 func (e *Leego) SetHTTPErrorHandler(h HTTPErrorHandler) {
 	e.httpErrorHandler = h
 }
 
+// SetHTTPSuccessHandler set http success handler
 func (e *Leego) SetHTTPSuccessHandler(h HTTPSuccessHandler) {
 	e.httpSuccessHandler = h
 }
@@ -411,13 +415,15 @@ func (e *Leego) Match(methods []string, path string, handler HandlerFunc, middle
 	}
 }
 
+// Add registers a new route for multiple HTTP methods and path with add
+// handler in the router with optional route-level middleware.
 func (e *Leego) Add(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) {
 	e.add(method, path, handler, middleware...)
 }
 
 func (e *Leego) add(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) {
 	name := handlerName(handler)
-	e.router.Add(method, path, func(c Context) LeegoError {
+	e.router.Add(method, path, func(c Context) LeeError {
 		h := handler
 		// Chain middleware
 		for i := len(middleware) - 1; i >= 0; i-- {
@@ -450,7 +456,7 @@ func (e *Leego) ServeHTTP(req engine.Request, res engine.Response) {
 	c.SetLang(req.Header().Get("Accept-Language"))
 
 	// Middleware
-	h := func(Context) LeegoError {
+	h := func(Context) LeeError {
 		method := req.Method()
 		path := req.URL().Path()
 		e.router.Find(method, path, c)
@@ -520,7 +526,7 @@ func (e *Leego) URL(h HandlerFunc, params ...interface{}) string {
 // WrapMiddleware wrap `leego.HandlerFunc` into `leego.MiddlewareFunc`.
 func WrapMiddleware(h HandlerFunc) MiddlewareFunc {
 	return func(next HandlerFunc) HandlerFunc {
-		return func(c Context) LeegoError {
+		return func(c Context) LeeError {
 			if err := h(c); err != nil {
 				return err
 			}

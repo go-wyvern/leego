@@ -43,10 +43,12 @@ func (r *Response) Header() engine.Header {
 	return r.header
 }
 
+// Body implements `engine.Response#Body` function.
 func (r *Response) Body() string {
 	return r.body
 }
 
+// SetBody implements `engine.Response#SetBody` function.
 func (r *Response) SetBody(b string) {
 	r.body = b
 }

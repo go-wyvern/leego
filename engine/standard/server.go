@@ -103,6 +103,7 @@ func (s *Server) Start() error {
 	return s.startCustomListener()
 }
 
+// Stop implements `engine.Server#Stop` function.
 func (s *Server) Stop() {
 	if s.config.Listener != nil {
 		s.config.Listener.Close()
@@ -151,7 +152,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // WrapHandler wraps `http.Handler` into `leego.HandlerFunc`.
 func WrapHandler(h http.Handler) leego.HandlerFunc {
-	return func(c leego.Context) leego.LeegoError {
+	return func(c leego.Context) leego.LeeError {
 		req := c.Request().(*Request)
 		res := c.Response().(*Response)
 		h.ServeHTTP(res.adapter, req.Request)
@@ -162,7 +163,7 @@ func WrapHandler(h http.Handler) leego.HandlerFunc {
 // WrapMiddleware wraps `func(http.Handler) http.Handler` into `leego.MiddlewareFunc`
 func WrapMiddleware(m func(http.Handler) http.Handler) leego.MiddlewareFunc {
 	return func(next leego.HandlerFunc) leego.HandlerFunc {
-		return func(c leego.Context) (err leego.LeegoError) {
+		return func(c leego.Context) (err leego.LeeError) {
 			req := c.Request().(*Request)
 			res := c.Response().(*Response)
 			m(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
