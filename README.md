@@ -6,7 +6,7 @@
 
 Leego is available as a Go module. Therefore a Go version capable of understanding /vN suffixed imports is required:
 
-1.6.3
+1.6.3+
 
 # Feature Overview
 
@@ -35,7 +35,7 @@ package main
 
 import (
   "net/http"
-  
+
   "github.com/go-wyvern/leego"
   "github.com/go-wyvern/leego/middleware"
 )
