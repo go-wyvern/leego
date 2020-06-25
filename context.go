@@ -115,10 +115,10 @@ type (
 		Cookies() []engine.Cookie
 
 		// Get retrieves data from the context.
-		Get(string) interface{}
+		Get(interface{}) interface{}
 
 		// Set saves data in the context.
-		Set(string, interface{})
+		Set(interface{}, interface{})
 
 		// Bind binds the request body into provided type `i`. The default binder
 		// does it based on Content-Type header.
@@ -376,7 +376,7 @@ func (c *leegoContext) Set(key interface{}, val interface{}) {
 	c.context = context.WithValue(c.context, key, val)
 }
 
-func (c *leegoContext) Get(key string) interface{} {
+func (c *leegoContext) Get(key interface{}) interface{} {
 	return c.context.Value(key)
 }
 
