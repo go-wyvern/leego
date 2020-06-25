@@ -4,6 +4,7 @@
 [![Build Status](https://api.travis-ci.org/go-wyvern/leego.svg?branch=master)](https://travis-ci.org/github/go-wyvern/leego)
 [![codecov](https://codecov.io/gh/go-wyvern/leego/branch/master/graph/badge.svg)](https://codecov.io/gh/go-wyvern/leego)
 [![License](http://img.shields.io/badge/license-mit-blue.svg?style=flat-square)](https://raw.githubusercontent.com/go-wyvern/leego/master/LICENSE)
+[![Go.Dev reference](https://img.shields.io/badge/go.dev-reference-blue?logo=go&logoColor=white)](https://pkg.go.dev/github.com/go-wyvern/leego?tab=doc)
 
 # Supported Go versions
 
